@@ -2,21 +2,25 @@ let isProcessing = false;
 let baseUrl = "http://10.10.11.6:8080/";
 let postDataUrl = baseUrl + "proof";
 let checkStatusUrl = baseUrl + "status";
+let counter = 0;
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    console.log(message);
     if (message.action === "sendData") {
+        counter++;
         const url = message.data.url;
         const html = message.data.html;
 
-        sendResponse(true);
+        console.log("isProcessing", isProcessing);
+        sendResponse(!isProcessing);
+        if (isProcessing) return;
+
+        isProcessing = true;
 
         const bodyJson = {
             source_url: url,
             data: html,
         };
 
-        console.log(bodyJson);
         try {
             const request = new Request(postDataUrl, {
                 method: "POST",
@@ -40,6 +44,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                         action: "error",
                     },
                 });
+                isProcessing = false;
                 return;
             }
 
@@ -82,5 +87,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         } catch (e) {
             console.log(e);
         }
+
+        isProcessing = false;
     }
 });
