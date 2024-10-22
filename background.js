@@ -1,12 +1,10 @@
 let isProcessing = false;
-let baseUrl = "http://10.10.11.6:8080/";
+let baseUrl = "http://localhost:8080/";
 let postDataUrl = baseUrl + "proof";
 let checkStatusUrl = baseUrl + "status";
-let counter = 0;
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.action === "sendData") {
-        counter++;
         const url = message.data.url;
         const html = message.data.html;
 
